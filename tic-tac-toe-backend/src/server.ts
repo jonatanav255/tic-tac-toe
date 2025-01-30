@@ -24,28 +24,28 @@ wss.on('connection', (ws: WsWebSocket) => {
 
   if (gameState.players.length < 2) {
     gameState.players.push(ws)
-  }
-  const playerSymbol = gameState.players.length === 1 ? 'X' : 'O'
+    const playerSymbol = gameState.players.length === 1 ? 'X' : 'O'
 
-  ws.send(
-    JSON.stringify({
-      type: 'welcome',
-      player: playerSymbol
-    })
-  )
+    ws.send(
+      JSON.stringify({
+        type: 'welcome',
+        player: playerSymbol
+      })
+    )
 
-  console.log(`Player ${playerSymbol} connected`)
+    console.log(`Player ${playerSymbol} connected`)
 
-  if (gameState.players.length === 2) {
-    gameState.players.forEach(player => {
-      player.send(
-        JSON.stringify({
-          type: 'start',
-          board: gameState.board
-        })
-      )
-    })
-    console.log('Game started')
+    if (gameState.players.length === 2) {
+      gameState.players.forEach(player => {
+        player.send(
+          JSON.stringify({
+            type: 'start',
+            board: gameState.board
+          })
+        )
+      })
+      console.log('Game started')
+    }
   } else {
     // Reject extra connections
     ws.send(
