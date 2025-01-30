@@ -1,5 +1,5 @@
 import { createServer } from 'http'
-import { WebSocketServer, WebSocket } from 'ws'
+import { WebSocketServer, WebSocket as WsWebSocket } from 'ws'
 import { GameState } from './types/gameState'
 
 const server = createServer((req, res) => {
@@ -10,8 +10,52 @@ const server = createServer((req, res) => {
 // Create a WebSocket server attached to the HTTP server
 const wss = new WebSocketServer({ server })
 
-wss.on('connection', (ws: WebSocket) => {
+const gameState: GameState = {
+  board: Array(3)
+    .fill(null)
+    .map(() => Array(3).fill('')),
+  currentPlayer: 'X',
+  players: [], // Explicitly typed as WebSocket[]
+  winner: null
+}
+
+wss.on('connection', (ws: WsWebSocket) => {
   console.log('A new client connected')
+
+  if (gameState.players.length < 2) {
+    gameState.players.push(ws)
+  }
+  const playerSymbol = gameState.players.length === 1 ? 'X' : 'O'
+
+  ws.send(
+    JSON.stringify({
+      type: 'welcome',
+      player: playerSymbol
+    })
+  )
+
+  console.log(`Player ${playerSymbol} connected`)
+
+  if (gameState.players.length === 2) {
+    gameState.players.forEach(player => {
+      player.send(
+        JSON.stringify({
+          type: 'start',
+          board: gameState.board
+        })
+      )
+    })
+    console.log('Game started')
+  } else {
+    // Reject extra connections
+    ws.send(
+      JSON.stringify({
+        type: 'error',
+        message: 'Game already full!'
+      })
+    )
+    ws.close()
+  }
 
   // Listen for messages from the client
   ws.on('message', message => {
@@ -28,12 +72,3 @@ const PORT = 8080
 server.listen(PORT, () => {
   console.log(`WebSocket server running on http://localhost:${PORT}`)
 })
-
-const gameState: GameState = {
-  board: Array(3)
-    .fill(null)
-    .map(() => Array(3).fill('')),
-  currentPlayer: 'X',
-  players: [],
-  winner: null
-}
