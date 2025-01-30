@@ -59,7 +59,58 @@ wss.on('connection', (ws: WsWebSocket) => {
 
   // Listen for messages from the client
   ws.on('message', message => {
-    console.log('Received message:', message.toString())
+    try {
+      const data = JSON.parse(message.toString())
+
+      if (data.type === 'move') {
+        const { row, col } = data
+
+        // Find the current player's symbol
+        const playerIndex = gameState.players.indexOf(ws)
+        const playerSymbol = playerIndex === 0 ? 'X' : 'O'
+
+        // Check if it's the correct player's turn
+        if (playerSymbol !== gameState.currentPlayer) {
+          ws.send(
+            JSON.stringify({ type: 'error', message: "It's not your turn!" })
+          )
+          return
+        }
+
+        // Validate if the move is within bounds and the cell is empty
+        if (
+          row < 0 ||
+          row > 2 ||
+          col < 0 ||
+          col > 2 || // Out of bounds check
+          gameState.board[row][col] !== '' // Cell already occupied
+        ) {
+          ws.send(JSON.stringify({ type: 'error', message: 'Invalid move!' }))
+          return
+        }
+
+        // Place the player's move
+        gameState.board[row][col] = playerSymbol
+
+        // Switch turn to the other player
+        gameState.currentPlayer = gameState.currentPlayer === 'X' ? 'O' : 'X'
+
+        // Broadcast the updated board to both players
+        gameState.players.forEach(player =>
+          player.send(
+            JSON.stringify({
+              type: 'update',
+              board: gameState.board,
+              currentPlayer: gameState.currentPlayer
+            })
+          )
+        )
+
+        console.log(`Player ${playerSymbol} moved to (${row}, ${col})`)
+      }
+    } catch (error) {
+      console.error('Error parsing message:', error)
+    }
   })
 
   // Handle client disconnection
