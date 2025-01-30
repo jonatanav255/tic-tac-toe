@@ -127,6 +127,31 @@ wss.on('connection', (ws: WsWebSocket) => {
   // Handle client disconnection
   ws.on('close', () => {
     console.log('A client disconnected')
+
+    // Find and remove the disconnected player
+    const playerIndex = gameState.players.indexOf(ws)
+    if (playerIndex !== -1) {
+      gameState.players.splice(playerIndex, 1) // Remove the player
+    }
+
+    // Reset the game if someone disconnects
+    gameState.board = Array(3)
+      .fill(null)
+      .map(() => Array(3).fill('')) // Reset the board
+    gameState.currentPlayer = 'X' // Reset to Player X's turn
+    gameState.winner = null // Reset winner
+
+    console.log('Game state reset due to disconnection')
+
+    // Notify the remaining player (if any)
+    if (gameState.players.length === 1) {
+      gameState.players[0].send(
+        JSON.stringify({
+          type: 'notification',
+          message: 'The other player disconnected. Waiting for a new player...'
+        })
+      )
+    }
   })
 })
 
