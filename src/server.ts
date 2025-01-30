@@ -62,54 +62,65 @@ wss.on('connection', (ws: WsWebSocket) => {
     try {
       const data = JSON.parse(message.toString())
 
-      if (data.type === 'move') {
-        const { row, col } = data
-
-        // Find the current player's symbol
-        const playerIndex = gameState.players.indexOf(ws)
-        const playerSymbol = playerIndex === 0 ? 'X' : 'O'
-
-        // Check if it's the correct player's turn
-        if (playerSymbol !== gameState.currentPlayer) {
-          ws.send(
-            JSON.stringify({ type: 'error', message: "It's not your turn!" })
-          )
-          return
-        }
-
-        // Validate if the move is within bounds and the cell is empty
-        if (
-          row < 0 ||
-          row > 2 ||
-          col < 0 ||
-          col > 2 || // Out of bounds check
-          gameState.board[row][col] !== '' // Cell already occupied
-        ) {
-          ws.send(JSON.stringify({ type: 'error', message: 'Invalid move!' }))
-          return
-        }
-
-        // Place the player's move
-        gameState.board[row][col] = playerSymbol
-
-        // Switch turn to the other player
-        gameState.currentPlayer = gameState.currentPlayer === 'X' ? 'O' : 'X'
-
-        // Broadcast the updated board to both players
-        gameState.players.forEach(player =>
-          player.send(
-            JSON.stringify({
-              type: 'update',
-              board: gameState.board,
-              currentPlayer: gameState.currentPlayer
-            })
-          )
+      // Validate the message structure
+      if (
+        !data.type || // Ensure 'type' exists
+        data.type !== 'move' || // Ensure it's a 'move' type
+        typeof data.row !== 'number' || // Ensure 'row' is a number
+        typeof data.col !== 'number' || // Ensure 'col' is a number
+        data.row < 0 ||
+        data.row > 2 || // Check row bounds
+        data.col < 0 ||
+        data.col > 2 // Check col bounds
+      ) {
+        ws.send(
+          JSON.stringify({
+            type: 'error',
+            message: 'Invalid message structure!'
+          })
         )
-
-        console.log(`Player ${playerSymbol} moved to (${row}, ${col})`)
+        return
       }
+
+      // Your existing move handling logic here
+      const { row, col } = data
+      const playerIndex = gameState.players.indexOf(ws)
+      const playerSymbol = playerIndex === 0 ? 'X' : 'O'
+
+      if (playerSymbol !== gameState.currentPlayer) {
+        ws.send(
+          JSON.stringify({ type: 'error', message: "It's not your turn!" })
+        )
+        return
+      }
+
+      if (gameState.board[row][col] !== '') {
+        ws.send(
+          JSON.stringify({
+            type: 'error',
+            message: 'Cell is already occupied!'
+          })
+        )
+        return
+      }
+
+      // Place the move
+      gameState.board[row][col] = playerSymbol
+      gameState.currentPlayer = playerSymbol === 'X' ? 'O' : 'X'
+
+      // Broadcast the updated board
+      gameState.players.forEach(player =>
+        player.send(
+          JSON.stringify({
+            type: 'update',
+            board: gameState.board,
+            currentPlayer: gameState.currentPlayer
+          })
+        )
+      )
     } catch (error) {
-      console.error('Error parsing message:', error)
+      // Handle invalid JSON
+      ws.send(JSON.stringify({ type: 'error', message: 'Invalid J format!' }))
     }
   })
 
