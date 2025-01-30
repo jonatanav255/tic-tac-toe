@@ -1,5 +1,6 @@
 import { createServer } from 'http'
 import { WebSocketServer, WebSocket } from 'ws'
+import { GameState } from './types/gameState'
 
 const server = createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' })
@@ -27,3 +28,12 @@ const PORT = 8080
 server.listen(PORT, () => {
   console.log(`WebSocket server running on http://localhost:${PORT}`)
 })
+
+const gameState: GameState = {
+  board: Array(3)
+    .fill(null)
+    .map(() => Array(3).fill('')),
+  currentPlayer: 'X',
+  players: [],
+  winner: null
+}
