@@ -54,6 +54,20 @@ wss.on('connection', (ws: WsWebSocket) => {
     try {
       const data = JSON.parse(message.toString())
 
+      if (data.type === 'reset') {
+        // Reset the game state on the server
+        gameManager.resetGame()
+        // Optionally, clear the players array if you want to force rejoining:
+        // gameManager.gameState.players = []
+        // Broadcast the new starting state to all connected players
+        gameManager.broadcast({
+          type: 'start',
+          board: gameManager.gameState.board,
+          currentPlayer: gameManager.gameState.currentPlayer
+        })
+        return
+      }
+
       // Validate the incoming move message structure
       if (
         !data.type ||
