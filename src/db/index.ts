@@ -1,9 +1,11 @@
 // src/db/index.ts
 import { config } from 'dotenv';
-import { Client } from 'pg';
+import * as path from 'path';
 
-// Load environment variables from the .env file
-config();
+// Load environment variables from the .env file located at the project root
+config({ path: path.resolve(__dirname, '../../.env') });
+
+import { Client } from 'pg';
 
 // Create a new PostgreSQL client using environment variables
 const client = new Client({
@@ -18,9 +20,15 @@ const client = new Client({
 client.connect()
   .then(() => {
     console.log('Connected to PostgreSQL database');
+    // You can execute queries here, for example:
+    return client.query('SELECT * FROM game_winners');
+  })
+  .then(result => {
+    // If you run a query above, you can handle the result here
+    // console.log('Query results:', result.rows);
   })
   .catch(err => {
-    console.error('Failed to connect to PostgreSQL database:', err);
+    console.error('Error connecting to the database or executing query:', err);
   });
 
 export default client;

@@ -3,6 +3,7 @@
 import { WebSocket } from 'ws'
 import { GameState } from '../types/gameState'
 import { checkWin, checkDraw } from './gameLogic'
+import pgClient from '../db'
 
 export class GameManager {
   gameState: GameState
@@ -59,6 +60,12 @@ export class GameManager {
         winner: playerSymbol,
         board: this.gameState.board
       })
+
+      pgClient
+        .query('INSERT INTO game_winners (winner) VALUES ($1)', [playerSymbol])
+        .then(() => console.log(`Game result saved: winner ${playerSymbol}`))
+        .catch(err => console.error('Error saving game result:', err))
+
       return
     }
 
