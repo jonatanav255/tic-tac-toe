@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Copy the rest of your source code into the container
+# Copy the rest of the source code
 COPY . .
 
 # Build the project (this compiles TypeScript into JavaScript in the "dist" folder)
@@ -21,14 +21,14 @@ WORKDIR /app
 # Copy the compiled output from the builder stage
 COPY --from=builder /app/dist ./
 
-# Copy package files so we can install dependencies in this stage
+# Copy package files to install production dependencies
 COPY package*.json ./
 
 # Install only production dependencies
 RUN npm install --production
 
-# Expose the port your server listens on (change 8080 if needed)
+# Expose the port your server listens on (adjust if needed)
 EXPOSE 8080
 
-# Run the application (adjust the command if your entry file has a different name)
+# Start the application (adjust the command if your entry file has a different name)
 CMD ["node", "server.js"]

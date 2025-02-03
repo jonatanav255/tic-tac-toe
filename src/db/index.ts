@@ -16,16 +16,29 @@ const client = new Client({
   database: process.env.PG_DATABASE
 });
 
+console.log("----------------------------3")
+console.log({
+  host: process.env.PG_HOST,
+  port: process.env.PG_PORT,
+  user: process.env.PG_USER,
+  password: process.env.PG_PASSWORD,
+  database: process.env.PG_DATABASE
+});
+
+console.log("----------------------------3")
+
+
 // Connect to the database
 client.connect()
   .then(() => {
     console.log('Connected to PostgreSQL database');
     // You can execute queries here, for example:
+    // return client.query('SELECT * FROM game_winners');
     return client.query('SELECT * FROM game_winners');
   })
   .then(result => {
     // If you run a query above, you can handle the result here
-    // console.log('Query results:', result.rows);
+    console.log('Query results:', result.rows);
   })
   .catch(err => {
     console.error('Error connecting to the database or executing query:', err);
