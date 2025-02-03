@@ -6,7 +6,7 @@
 # bash script to pull and build the container
 
 - chmod +x scripts/*.sh
-- ./scripts/pull_and_run_frontend.sh
+- ./scripts/pull_and_run_backend.sh
 
 # script to run the app for development
 
