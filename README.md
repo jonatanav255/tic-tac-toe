@@ -8,10 +8,6 @@
 - chmod +x scripts/*.sh
 - ./scripts/pull_and_run_backend.sh
 
-# script to run the app for development
+# Script to get into the DB (docker)
+- docker exec -it my-postgres-db psql -U jonatanav255 -d myworkdb
 
-- npm run dev
-
-# script to run the app for Production
-
-- npm run build
