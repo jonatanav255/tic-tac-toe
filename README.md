@@ -11,3 +11,5 @@
 # Script to get into the DB (docker)
 - docker exec -it my-postgres-db psql -U jonatanav255 -d myworkdb
 
+##
+docker buildx build --platform linux/amd64 -t jonatanav255/my-backend:latest --push .

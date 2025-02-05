@@ -1,11 +1,17 @@
 // src/db/index.ts
 import { config } from 'dotenv';
-import * as path from 'path';
+import * as path from 'path'
+import * as fs from 'fs';
+
 
 // Load environment variables from the .env file located at the project root
 config({ path: path.resolve(__dirname, '../../.env') });
 
 import { Client } from 'pg';
+
+const caCertPath = process.env.PG_SSL_CA_PATH || '/opt/myapp/ssl/rds-combined-ca-bundle.pem';
+const caCert = fs.readFileSync(caCertPath).toString();
+
 
 // Create a new PostgreSQL client using environment variables
 const client = new Client({
@@ -22,7 +28,11 @@ console.log({
   port: process.env.PG_PORT,
   user: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
-  database: process.env.PG_DATABASE
+  database: process.env.PG_DATABASE,
+  ssl: {
+    ca: caCert,
+    rejectUnauthorized: true  // Ensure the certificate chain is verified
+  }
 });
 
 console.log("----------------------------3")
