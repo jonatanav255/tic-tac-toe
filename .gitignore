@@ -23,3 +23,4 @@ Thumbs.db
 *.iml
 docker-compose/.env.postgres
 us-east-1-bundle.pem
+.env_local

@@ -1,4 +1,4 @@
-# ======= STAGE 1: Build the Back End =======
+# ======= STAGE 1: Build =======
 FROM node:18 AS builder
 
 WORKDIR /app
@@ -7,28 +7,33 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the source code
+# Copy the rest of your source code
 COPY . .
 
-# Build the project (this compiles TypeScript into JavaScript in the "dist" folder)
+# Build the project (compiles TypeScript into "dist/")
 RUN npm run build
 
-# ======= STAGE 2: Run the Back End =======
+# ======= STAGE 2: Run =======
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy the compiled output from the builder stage
+# Copy the dist folder from the builder
 COPY --from=builder /app/dist ./
 
-# Copy package files to install production dependencies
+# Copy the production dependencies only
 COPY package*.json ./
-
-# Install only production dependencies
 RUN npm install --production
 
-# Expose the port your server listens on (adjust if needed)
+# Copy the AWS RDS SSL certificate file
+COPY us-east-1-bundle.pem /app/us-east-1-bundle.pem
+
+# Optionally set default environment variables here:
+# ENV PG_SSL_CA_PATH=/app/us-east-1-bundle.pem
+# ENV PGSSLMODE=require
+
+# Expose the port your app listens on (adjust if needed)
 EXPOSE 8080
 
-# Start the application (adjust the command if your entry file has a different name)
+# Start your server
 CMD ["node", "server.js"]
