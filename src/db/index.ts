@@ -22,16 +22,16 @@ const client = new Client({
   // },
 });
 
-client.connect()
-  .then(() => {
-    console.log('Connected to PostgreSQL database');
-    return client.query('SELECT * FROM game_winners');
-  })
-  .then(result => {
-    console.log('Query results:', result.rows);
-  })
-  .catch(err => {
-    console.error('Error connecting / executing query:', err);
-  });
+// client.connect()
+//   .then(() => {
+//     console.log('Connected to PostgreSQL database');
+//     return client.query('SELECT * FROM game_winners');
+//   })
+//   .then(result => {
+//     console.log('Query results:', result.rows);
+//   })
+//   .catch(err => {
+//     console.error('Error connecting / executing query:', err);
+//   });
 
 export default client;
