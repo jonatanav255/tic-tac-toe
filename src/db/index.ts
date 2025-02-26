@@ -16,14 +16,6 @@ const client = new Client({
   database: process.env.PG_DATABASE,
 });
 
-console.log('Environment Variables:', {
-  PG_HOST: process.env.PG_HOST,
-  PG_USER: process.env.PG_USER,
-  PG_DATABASE: process.env.PG_DATABASE,
-  PG_PORT: process.env.PG_PORT,
-});
-
-
 client.connect()
   .then(() => {
     console.log('Connected to PostgreSQL database');

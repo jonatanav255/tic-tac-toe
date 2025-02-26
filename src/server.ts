@@ -4,7 +4,7 @@ import { createServer } from 'http'
 import { WebSocketServer, WebSocket as WsWebSocket } from 'ws'
 import { GameManager } from './game/gameManager'
 
-import pgClient from './db'; 
+import pgClient from './db';
 
 const server = createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' })
