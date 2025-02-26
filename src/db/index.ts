@@ -1,11 +1,12 @@
 // src/db/index.ts
-import { config } from 'dotenv';
+// import { config } from 'dotenv';
 // config();
-import * as path from 'path';
+// import * as path from 'path';
 
 import { Client } from 'pg';
 
-config({ path: path.resolve(__dirname, '../../.env') });
+// config({ path: path.resolve(__dirname, '../../.env') });
+
 
 const client = new Client({
   host: process.env.PG_HOST,
