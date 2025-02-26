@@ -1,14 +1,9 @@
 // src/db/index.ts
 import { config } from 'dotenv';
-import * as path from 'path';
-import * as fs from 'fs';
+config();
+
 import { Client } from 'pg';
 
-// Load environment variables from .env if you want in dev:
-config({ path: path.resolve(__dirname, '../../.env') });
-
-// const caCertPath = process.env.PG_SSL_CA_PATH || '/app/us-east-1-bundle.pem';
-// const caCert = fs.readFileSync(caCertPath, 'utf8');
 
 const client = new Client({
   host: process.env.PG_HOST,
